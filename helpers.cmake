@@ -51,9 +51,9 @@ endfunction()
 
 function(enable_target_position_independent_code target)
     set_target_properties(
-    ${target}
-        PROPERTY 
-        POSITION_INDEPENDENT_CODE ON
+        ${target}
+            PROPERTIES 
+            POSITION_INDEPENDENT_CODE ON
     )
 endfunction()
 
