@@ -141,3 +141,53 @@ function(enable_target_sanitizer target sanitizer)
         endif()
     endif()
 endfunction()
+
+function(install_and_export_target target include_folder_name)
+    install(
+        TARGETS ${target} EXPORT ${target}_targets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    
+    install(
+        DIRECTORY ${include_folder_name}/
+        DESTINATION ${include_folder_name}
+    )
+    
+    install(
+        EXPORT ${target}_targets
+        DESTINATION lib/cmake/${target}
+        FILE ${target}Targets.cmake
+        NAMESPACE ${target}::
+    )
+    
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/${target}ConfigVersion.cmake 
+        VERSION 1.0.0
+        COMPATIBILITY SameMajorVersion
+    )
+    
+    install(
+        FILES ${target}Config.cmake
+        DESTINATION lib/cmake/${target}
+    )
+endfunction()
+
+# Requires package.xml file to be present in the current directory
+function(enable_ros_tooling_for_target target package_xml)
+    # Install package.xml file so this package can be processed by ROS toolings
+    # Installing this in non-ROS environments won't have any effect, but it won't harm, either.
+    install(
+        FILES ${package_xml} 
+        DESTINATION share/${target}
+    )
+    
+    # Allows Colcon to find non-Ament packages when using workspace underlays
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} "")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${PROJECT_NAME} DESTINATION share/ament_index/resource_index/packages)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv "prepend-non-duplicate;AMENT_PREFIX_PATH;")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv DESTINATION share/${PROJECT_NAME}/hook)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv "prepend-non-duplicate;ROS_PACKAGE_PATH;")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv DESTINATION share/${PROJECT_NAME}/hook)
+endfunction()
