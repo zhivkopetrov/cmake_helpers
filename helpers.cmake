@@ -31,8 +31,9 @@ function(enable_target_warnings target)
               -Wnull-dereference
     )
     
-    if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    if(CMAKE_CXX_COMPILER_ID MATCHES GNU AND NOT ${USE_IWYU})
         #supported only in GNU
+        #however include-what-you-use is not happy with those options
         target_compile_options(
           ${target}
               PRIVATE
