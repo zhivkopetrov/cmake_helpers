@@ -177,6 +177,8 @@ endfunction()
 
 # Requires package.xml file to be present in the current directory
 function(enable_ros_tooling_for_target target package_xml)
+    find_package(ament_cmake REQUIRED)
+
     # Install package.xml file so this package can be processed by ROS toolings
     # Installing this in non-ROS environments won't have any effect, but it won't harm, either.
     install(
@@ -184,11 +186,19 @@ function(enable_ros_tooling_for_target target package_xml)
         DESTINATION share/${target}
     )
     
+    # ros2 run requires both libraries and binaries to be placed in 'lib'
+    install(TARGETS
+      ${target}
+      DESTINATION lib/${target}
+    )
+    
     # Allows Colcon to find non-Ament packages when using workspace underlays
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} "")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${PROJECT_NAME} DESTINATION share/ament_index/resource_index/packages)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} DESTINATION share/ament_index/resource_index/packages)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv "prepend-non-duplicate;AMENT_PREFIX_PATH;")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv DESTINATION share/${PROJECT_NAME}/hook)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv DESTINATION share/${target}/hook)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv "prepend-non-duplicate;ROS_PACKAGE_PATH;")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv DESTINATION share/${PROJECT_NAME}/hook)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv DESTINATION share/${target}/hook)
+
+    ament_package()
 endfunction()
