@@ -14,6 +14,16 @@ set_target_properties(
 endfunction()
 
 function(enable_target_warnings target)
+    if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        target_compile_options(
+            ${target}
+                PRIVATE
+                  /W4
+                  /WX
+        )
+        return()
+    endif()
+    
     target_compile_options(
         ${target}
             PRIVATE
@@ -70,12 +80,8 @@ function(set_target_visibility target)
                 STRING "Choose the type of build." FORCE)
     endif()
     
-    if(${CMAKE_BUILD_TYPE} MATCHES Release OR 
-       ${CMAKE_BUILD_TYPE} MATCHES MinSizeRel)
-        # Default to hidden visibility for symbols
-        set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-        set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
-        
+    if((${CMAKE_BUILD_TYPE} MATCHES Release) OR 
+       (${CMAKE_BUILD_TYPE} MATCHES MinSizeRel))        
         set_target_properties(
             ${target}
              PROPERTIES 
@@ -89,13 +95,15 @@ function(set_target_visibility target)
         elseif(APPLE)
             set(R_DYNAMIC_FLAG "-Wl,-export_dynamic")
         endif()
+        
+        target_link_libraries(
+            ${target} 
+                PRIVATE
+                    ${R_DYNAMIC_FLAG} # export of static symbols
+        ) 
     endif()
     
-    target_link_libraries(
-        ${target} 
-            PRIVATE
-            ${R_DYNAMIC_FLAG} # export of static symbols
-    )   
+  
 endfunction()
 
 #enable_target_c_sanitizer(${my_target} "address")
@@ -193,12 +201,38 @@ function(enable_ros_tooling_for_target target package_xml)
     )
     
     # Allows Colcon to find non-Ament packages when using workspace underlays
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} "")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} DESTINATION share/ament_index/resource_index/packages)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv "prepend-non-duplicate;AMENT_PREFIX_PATH;")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv DESTINATION share/${target}/hook)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv "prepend-non-duplicate;ROS_PACKAGE_PATH;")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv DESTINATION share/${target}/hook)
+    file(
+        WRITE 
+        ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target} 
+        ""
+    )
+    install(
+        FILES 
+        ${CMAKE_CURRENT_BINARY_DIR}/share/ament_index/resource_index/packages/${target}
+        DESTINATION share/ament_index/resource_index/packages
+    )
+    
+    file(
+        WRITE 
+        ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv
+        "prepend-non-duplicate;AMENT_PREFIX_PATH;"
+    )
+    install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ament_prefix_path.dsv
+        DESTINATION
+        share/${target}/hook
+    )
+    
+    file(
+        WRITE
+        ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv
+        "prepend-non-duplicate;ROS_PACKAGE_PATH;"
+    )
+    install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/share/${target}/hook/ros_package_path.dsv
+        DESTINATION share/${target}/hook
+    )
 
     ament_package()
 endfunction()
