@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 list(APPEND 
-    CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/find_modules)
+     CMAKE_MODULE_PATH 
+     ${CMAKE_CURRENT_LIST_DIR}/find_modules
+)
 
 function(set_target_cpp_standard target standard)
 set_target_properties(
