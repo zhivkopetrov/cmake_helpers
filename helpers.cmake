@@ -196,10 +196,28 @@ function(enable_ros_tooling_for_target target package_xml)
         DESTINATION share/${target}
     )
     
+    # Install config directory (if any)
+    get_filename_component(_FULL_LAUNCH_PATH launch REALPATH)
+	if ((EXISTS ${_FULL_LAUNCH_PATH}) AND (IS_DIRECTORY ${_FULL_LAUNCH_PATH}))
+		install(
+			DIRECTORY launch 
+			DESTINATION share/${target}/
+		)
+	endif()
+	
+	# Install launch directory (if any)
+	get_filename_component(_FULL_CONFIG_PATH launch REALPATH)
+	if ((EXISTS ${_FULL_CONFIG_PATH}) AND (IS_DIRECTORY ${_FULL_CONFIG_PATH}))
+		install(
+			DIRECTORY config 
+			DESTINATION share/${target}/
+		)
+	endif()
+    
     # ros2 run requires both libraries and binaries to be placed in 'lib'
     install(TARGETS
-      ${target}
-      DESTINATION lib/${target}
+        ${target}
+        DESTINATION lib/${target}
     )
     
     # Allows Colcon to find non-Ament packages when using workspace underlays
