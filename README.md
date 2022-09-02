@@ -1,7 +1,7 @@
 # cmake_helpers
 
-## Brief
-A set of cmake helpers macros for:
+**A set of cmake helpers functions and find modules:**
+Most notable functions
 - setting cpp standard
 - enabling target warnings
 - setting target visibility
