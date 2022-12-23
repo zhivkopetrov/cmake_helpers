@@ -104,6 +104,7 @@ FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL_ttf.h
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
+	"C:/SDL2"
 )
 
 # Lookup the 64 bit libs on x64
