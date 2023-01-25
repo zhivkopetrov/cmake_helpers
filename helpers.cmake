@@ -155,9 +155,14 @@ endfunction()
 
 function(install_and_export_target target include_folder_name)
     install(
-        TARGETS ${target} EXPORT ${target}_targets
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        TARGETS 
+            ${target} 
+        EXPORT 
+            ${target}Targets
+        LIBRARY 
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME 
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
     
     install(
@@ -166,7 +171,7 @@ function(install_and_export_target target include_folder_name)
     )
     
     install(
-        EXPORT ${target}_targets
+        EXPORT ${target}Targets
         DESTINATION lib/cmake/${target}
         FILE ${target}Targets.cmake
         NAMESPACE ${target}::
