@@ -91,7 +91,7 @@ function(set_target_visibility target)
                 VISIBILITY_INLINES_HIDDEN TRUE
         )
     elseif((${CMAKE_BUILD_TYPE} MATCHES Debug) OR 
-           (s${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))  
+           (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))  
         if(UNIX)
             set(R_DYNAMIC_FLAG "-rdynamic")
         elseif(APPLE)
