@@ -153,6 +153,19 @@ function(enable_target_sanitizer target sanitizer)
     endif()
 endfunction()
 
+function(fetch_and_provide_googletest)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        googletest
+        # Specify the commit you depend on and update it regularly.
+        URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE PARENT_SCOPE)
+    FetchContent_MakeAvailable(googletest)
+endfunction()
+
 function(install_and_export_target target include_folder_name)
     install(
         TARGETS 
