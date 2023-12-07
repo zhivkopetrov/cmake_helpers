@@ -166,6 +166,33 @@ function(fetch_and_provide_googletest)
     FetchContent_MakeAvailable(googletest)
 endfunction()
 
+function(set_default_project_output_directories)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib PARENT_SCOPE)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin PARENT_SCOPE)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin PARENT_SCOPE)
+
+    # Explicitly set output directories for all build types (Debug, Release, etc.)
+    # Cheers for MSVC
+    foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+
+        set(
+            CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} 
+            ${CMAKE_BINARY_DIR}/lib PARENT_SCOPE
+        )
+
+        set(
+            CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} 
+            ${CMAKE_BINARY_DIR}/bin PARENT_SCOPE
+        )
+
+        set(
+            CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} 
+            ${CMAKE_BINARY_DIR}/bin PARENT_SCOPE
+        )
+    endforeach()
+endfunction()
+
 function(install_and_export_target target include_folder_name)
     install(
         TARGETS 
