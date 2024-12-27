@@ -10,19 +10,21 @@ project(
 if(NOT DISABLE_ROS_TOOLING)
 	find_package(ament_cmake REQUIRED)
 	
+	set(ProjectPath share/${PROJECT_NAME})
 	install(
 	    FILES package.xml
-	    DESTINATION share/${PROJECT_NAME}
+	    DESTINATION ${ProjectPath}
 	)
 	
 	# Install the helpers.cmake so it can be reused from other ROS2 packages
+	set(CMakeProjectPath ${ProjectPath}/cmake)
 	install(
 	    FILES helpers.cmake
-	    DESTINATION share/${PROJECT_NAME}/cmake
+	    DESTINATION ${CMakeProjectPath}
 	)
 	install(
 	    DIRECTORY find_modules
-	    DESTINATION share/${PROJECT_NAME}/cmake
+	    DESTINATION ${CMakeProjectPath}
 	)
 	
 	ament_package()
